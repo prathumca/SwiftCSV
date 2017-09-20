@@ -97,7 +97,9 @@ struct ParsingState {
                     innerQuotes = false
                     finishRow()
                 } else {
-                    fatalError("Can't have non-quote here: \(char)")
+//                    fatalError("Can't have non-quote here: \(char)")
+                    //Added by Prathap: This makes app crashes, hence thorw error/excpetions so that apps can handle it.
+                    throw CSVError.invalidCharacter
                 }
             } else {
                 if char == "\"" {
@@ -107,7 +109,9 @@ struct ParsingState {
                 }
             }
         } else {
-            fatalError("me_irl")
+//            fatalError("me_irl")
+            //Added by Prathap: This makes app crashes, hence thorw error/excpetions so that apps can handle it.
+            throw CSVError.invalidCharacter
         }
     }
 }
