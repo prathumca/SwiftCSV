@@ -18,8 +18,12 @@ open class CSV {
         var rows = [[String: String]]()
         var columns = [String: [String]]()
 
-        self.enumerateAsDict { dict in
-            rows.append(dict)
+        do {
+            try self.enumerateAsDict { dict in
+                rows.append(dict)
+            }
+        } catch let error {
+            print(error)
         }
 
         if self.loadColumns {
@@ -35,8 +39,12 @@ open class CSV {
 
         var rows = [[String]]()
         var columns: [EnumeratedView.Column] = []
-        self.enumerateAsArray { rows.append($0) }
-
+        do {
+            try self.enumerateAsArray { rows.append($0) }
+        } catch let error {
+            print(error)
+        }
+        
         if self.loadColumns {
             columns = self.header.enumerated().map { (index: Int, header: String) -> EnumeratedView.Column in
 
@@ -95,11 +103,11 @@ open class CSV {
     /// - parameter string: Contents of the CSV file
     /// - parameter delimiter: Character to split row and header fields by (default is ',')
     /// - parameter loadColumns: Whether to populate the columns dictionary (default is true)
-    public init(string: String, delimiter: Character = comma, loadColumns: Bool = true) {
+    public init(string: String, delimiter: Character = comma, loadColumns: Bool = true) throws {
         self.text = string
         self.delimiter = delimiter
         self.loadColumns = loadColumns
-        self.header = CSV.array(text: string, delimiter: delimiter).first ?? []
+        try self.header = CSV.array(text: string, delimiter: delimiter).first ?? []
     }
     
     /// Load a CSV file
@@ -111,7 +119,7 @@ open class CSV {
     public convenience init(name: String, delimiter: Character = comma, encoding: String.Encoding = .utf8, loadColumns: Bool = true) throws {
         let contents = try String(contentsOfFile: name, encoding: encoding)
     
-        self.init(string: contents, delimiter: delimiter, loadColumns: loadColumns)
+        try self.init(string: contents, delimiter: delimiter, loadColumns: loadColumns)
     }
     
     /// Load a CSV file from a URL
@@ -123,7 +131,7 @@ open class CSV {
     public convenience init(url: URL, delimiter: Character = comma, encoding: String.Encoding = .utf8, loadColumns: Bool = true) throws {
         let contents = try String(contentsOf: url, encoding: encoding)
         
-        self.init(string: contents, delimiter: delimiter, loadColumns: loadColumns)
+        try self.init(string: contents, delimiter: delimiter, loadColumns: loadColumns)
     }
     
     /// Turn the CSV data into NSData using a given encoding

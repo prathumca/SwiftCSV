@@ -9,16 +9,16 @@
 extension CSV {
     /// Parse the file and call a block on each row, passing it in as a list of fields
     /// limitTo will limit the result to a certain number of lines
-    func enumerateAsArray(_ block: @escaping ([String]) -> (), limitTo: Int?, startAt: Int = 0) {
+    func enumerateAsArray(_ block: @escaping ([String]) -> (), limitTo: Int?, startAt: Int = 0) throws {
 
-        CSV.enumerateAsArray(text: self.text, delimiter: self.delimiter, limitTo: limitTo, startAt: startAt, block: block)
+        try CSV.enumerateAsArray(text: self.text, delimiter: self.delimiter, limitTo: limitTo, startAt: startAt, block: block)
     }
 
-    static func array(text: String, delimiter: Character, limitTo: Int? = nil, startAt: Int = 0) -> [[String]] {
+    static func array(text: String, delimiter: Character, limitTo: Int? = nil, startAt: Int = 0) throws -> [[String]] {
 
         var rows = [[String]]()
 
-        enumerateAsArray(text: text, delimiter: delimiter) { row in
+        try enumerateAsArray(text: text, delimiter: delimiter) { row in
             rows.append(row)
         }
 
@@ -33,7 +33,7 @@ extension CSV {
     ///   at the row with index `limitTo` (or on end-of-text, whichever is earlier.
     /// - parameter startAt: Offset of rows to ignore before invoking `block` for the first time. Default is 0.
     /// - parameter block: Callback invoked for every parsed row between `startAt` and `limitTo` in `text`.
-    static func enumerateAsArray(text: String, delimiter: Character, limitTo: Int? = nil, startAt: Int = 0, block: @escaping ([String]) -> ()) {
+    static func enumerateAsArray(text: String, delimiter: Character, limitTo: Int? = nil, startAt: Int = 0, block: @escaping ([String]) -> ()) throws {
         var currentIndex = text.startIndex
         let endIndex = text.endIndex
 
@@ -73,7 +73,7 @@ extension CSV {
         while currentIndex < endIndex {
             let char = text[currentIndex]
 
-            state.change(char)
+            try state.change(char)
 
             if limitReached(count) {
                 break
